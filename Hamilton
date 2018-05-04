@@ -1,0 +1,93 @@
+import random
+
+class Vertex:
+    def __init__(self):
+        self.nextVertex = set()
+        self.visit = False
+
+    def addNext(self,vertex):
+        self.nextVertex.add(vertex)
+
+    def getNext(self):
+        return self.nextVertex;
+
+    def Visited(self,visit):
+        self.visit = visit
+
+    def getVisited(self):
+        return self.visit
+
+class Graph:
+    def __init__(self, numVertex, rdm = False, numEdge = 0, Edges = []):
+        self.numVertex = numVertex
+        self.vertices = dict()
+        self.cycle = []
+        for i in range(0,self.numVertex):
+            self.vertices[i] = Vertex()
+            
+        if rdm is False and (len(Edges) != 0):
+            for item in Edges:
+                self.addEdge(item[0],item[1])
+
+        if rdm and (numEdge != 0):
+            for i in range(0,numEdge):
+                a = random.randint(0,self.numVertex)
+                b = random.randint(0,self.numVertex)
+                self.addEdge(a,b)
+
+    def addVertex(self, num = 1):
+        for i in range(self.numVertex, self.numVertex + num):
+            self.vertices[i] = Vertex()
+        self.numVertex += num
+
+    def addEdge(self, a, b):
+        if a not in self.vertices:
+            self.addVertex(a)
+        if b not in self.vertices:
+            self.addVertex(b)
+        self.vertices[a].addNext(b)
+
+    def allVisited(self):
+        for item in self.vertices:
+            if self.vertices[item].getVisited() is False:
+                return False
+        return True
+    
+    def printCycle(self):
+        print("Cycle start from:" + str(self.cycle[0]) + '\n')
+        print ("Cycle:")
+        for i in range(len(self.cycle)):
+            print self.cycle[i]
+
+    def Exhaustive(self,ver):
+        self.cycle.append(ver)
+        self.vertices[ver].Visited(True)
+        if self.allVisited() is True:
+            if self.cycle[0] in self.vertices[ver].getNext():
+                self.cycle.append(self.cycle[0])
+                return True
+            del self.cycle[-1:]
+            return
+if len(self.vertices[ver].getNext()) == 0:
+            self.vertices[ver].Visited(False)
+            del self.cycle[-1:]
+            return
+
+        recur = self.vertices[ver].getNext()
+        for item in recur:
+            if self.vertices[item].getVisited() == False:
+                r = self.Exhaustive(item)
+                if r == True:
+                    return True
+
+        self.vertices[ver].Visited(False)
+        del self.cycle[-1:]
+        return     
+
+if __name__ == "__main__":
+    Edges = [[0,1],[1,2],[2,3],[3,4],[4,0],[3,2],[3,0],[2,0]]
+    G = Graph(5, Edges = Edges)
+    result = G.Exhaustive(0)
+    print(result)
+    if result:
+        G.printCycle()
